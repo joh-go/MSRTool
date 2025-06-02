@@ -14,6 +14,11 @@ endif()
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS src/*.cpp)
 add_executable(MSRTool ${SOURCES})
 
+target_include_directories(MSRTool
+    PRIVATE
+        ${PROJECT_SOURCE_DIR}/include
+)
+
 # ---------- Tests mit GoogleTest ----------
 include(FetchContent)
 FetchContent_Declare(
@@ -30,6 +35,10 @@ file(GLOB_RECURSE TEST_SOURCES CONFIGURE_DEPENDS tests/*.cpp)
 
 # Test-Executable erstellen
 add_executable(UnitTests ${TEST_SOURCES})
+target_include_directories(UnitTests
+    PRIVATE
+        ${PROJECT_SOURCE_DIR}/include
+)
 target_link_libraries(UnitTests PRIVATE gtest_main)
 
 # Tests registrieren
