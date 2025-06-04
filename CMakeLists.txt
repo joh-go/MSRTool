@@ -1,9 +1,25 @@
 cmake_minimum_required(VERSION 3.14)
 
-project(MyProject VERSION 1.0)
+project(MSRTool VERSION 1.0)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+
+# Bibliothek erstellen
+# Header und Source-Dateien automatisch finden
+file(GLOB_RECURSE LIB_HEADERS CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/include/*.hpp")
+file(GLOB_RECURSE LIB_SOURCES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/*.cpp")
+
+add_library(MSRTools
+    ${LIB_SOURCES} ${LIB_HEADERS}
+)
+
+# Include-Verzeichnis öffentlich machen
+target_include_directories(MSRTools
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>
+)
 
 # Compiler-Warnungen
 if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -19,28 +35,6 @@ target_include_directories(MSRTool
         ${PROJECT_SOURCE_DIR}/include
 )
 
-# ---------- Tests mit GoogleTest ----------
-include(FetchContent)
-FetchContent_Declare(
-  googletest
-  GIT_REPOSITORY https://github.com/google/googletest.git
-  GIT_TAG v1.17.0 # oder aktuelle Version
-)
-FetchContent_MakeAvailable(googletest)
-
+# Optional: Unit-Tests mit GoogleTest
 enable_testing()
-
-# Test-Dateien finden
-file(GLOB_RECURSE TEST_SOURCES CONFIGURE_DEPENDS tests/*.cpp)
-
-# Test-Executable erstellen
-add_executable(UnitTests ${TEST_SOURCES})
-target_include_directories(UnitTests
-    PRIVATE
-        ${PROJECT_SOURCE_DIR}/include
-)
-target_link_libraries(UnitTests PRIVATE gtest_main)
-
-# Tests registrieren
-include(GoogleTest)
-gtest_discover_tests(UnitTests)
+add_subdirectory(tests)
